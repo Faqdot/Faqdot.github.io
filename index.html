@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DevOps Mastery — 10-Day Infrastructure Guide</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;600;800&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- ① All styles in one external file -->
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- Confetti canvas (sits over page, pointer-events:none) -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- ════════════════════════════════════════
+     TOP BAR
+════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-logo">DevOps<span>Guide</span></div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="Search days, commands…" autocomplete="off"/>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <!-- Study timer -->
+  <div class="timer-wrap">
+    <span>⏱</span>
+    <span class="timer-display" id="timerDisplay">00:00</span>
+    <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">Start</button>
+    <button class="timer-btn" onclick="resetTimer()" title="Reset timer">↺</button>
+  </div>
+
+  <!-- Global progress -->
+  <div class="topbar-progress">
+    <span id="prog-pct">0%</span>
+    <div class="prog-bar-wrap">
+      <div class="prog-bar-fill" id="progFill"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════
+     LAYOUT WRAPPER
+════════════════════════════════════════ -->
+<div class="layout">
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Week 1 — Foundation</div>
+    <a class="day-link active" href="#day1"  data-day="1" ><span class="day-dot"></span>Day 1  — Linux Basics<span class="day-badge">3 steps</span></a>
+    <a class="day-link"        href="#day2"  data-day="2" ><span class="day-dot"></span>Day 2  — Shell Scripting<span class="day-badge">3 steps</span></a>
+    <a class="day-link"        href="#day3"  data-day="3" ><span class="day-dot"></span>Day 3  — Git & Version Control<span class="day-badge">3 steps</span></a>
+
+    <div class="sidebar-sep"></div>
+    <div class="sidebar-section-label">Week 2 — Containers</div>
+    <a class="day-link"        href="#day4"  data-day="4" ><span class="day-dot"></span>Day 4  — Docker Basics<span class="day-badge">3 steps</span></a>
+    <a class="day-link"        href="#day5"  data-day="5" ><span class="day-dot"></span>Day 5  — Docker Compose<span class="day-badge">3 steps</span></a>
+
+    <div class="sidebar-sep"></div>
+    <div class="sidebar-section-label">Week 3 — CI/CD</div>
+    <a class="day-link"        href="#day6"  data-day="6" ><span class="day-dot"></span>Day 6  — GitHub Actions<span class="day-badge">3 steps</span></a>
+    <a class="day-link"        href="#day7"  data-day="7" ><span class="day-dot"></span>Day 7  — Pipeline Deploy<span class="day-badge">3 steps</span></a>
+
+    <div class="sidebar-sep"></div>
+    <div class="sidebar-section-label">Week 4 — Cloud & IaC</div>
+    <a class="day-link"        href="#day8"  data-day="8" ><span class="day-dot"></span>Day 8  — AWS Essentials<span class="day-badge">3 steps</span></a>
+    <a class="day-link"        href="#day9"  data-day="9" ><span class="day-dot"></span>Day 9  — Terraform IaC<span class="day-badge">3 steps</span></a>
+    <a class="day-link"        href="#day10" data-day="10"><span class="day-dot"></span>Day 10 — Kubernetes<span class="day-badge">3 steps</span></a>
+  </aside>
+
+  <!-- ════ MAIN CONTENT ════ -->
+  <main class="main">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div class="page-tag">📦 DevOps / Infrastructure</div>
+      <h1 class="page-title">From Zero to <span>Production</span><br>in 10 Days</h1>
+      <p class="page-desc">A hands-on, day-by-day roadmap covering Linux, containers, CI/CD, cloud infrastructure, and Kubernetes — with real commands, quizzes, and a study timer.</p>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="progress-overview">
+      <div class="prog-card"><div class="prog-card-label">Total Days</div><div class="prog-card-value">10</div></div>
+      <div class="prog-card"><div class="prog-card-label">Completed</div><div class="prog-card-value green" id="doneCount">0</div></div>
+      <div class="prog-card"><div class="prog-card-label">Study Time</div><div class="prog-card-value blue" id="studyTimeCard">0m</div></div>
+      <div class="prog-card"><div class="prog-card-label">Est. Duration</div><div class="prog-card-value yellow">~30h</div></div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         DAY 1 — Linux Fundamentals
+    ════════════════════════════════════════ -->
+    <div class="day-section" id="day1">
+      <div class="day-header">
+        <span class="day-num">Day 01</span>
+        <h2 class="day-title">Linux Fundamentals</h2>
+        <button class="day-complete-btn" data-day="1">Mark Complete</button>
+      </div>
+      <p class="day-intro">Every server runs Linux. Master the file system, permissions, and process management before touching any automation tool.</p>
+
+      <div class="steps">
+        <div class="step" id="s1-1">
+          <div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">File System Navigation</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body">
+            <p class="step-desc">Learn to move through the Linux file system. Understanding paths, listing contents, and finding files are skills you'll use every day.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="cmt"># Print current directory</span>
+<span class="fn">pwd</span>
+
+<span class="cmt"># List all files including hidden, with details</span>
+<span class="fn">ls</span> -la
+
+<span class="cmt"># Navigate and create directories</span>
+<span class="fn">mkdir</span> -p ~/projects/devops/day1
+<span class="fn">cd</span> ~/projects/devops/day1
+
+<span class="cmt"># Find files by name recursively</span>
+<span class="fn">find</span> / -name <span class="str">"*.conf"</span> <span class="num">2</span>>/dev/null
+
+<span class="cmt"># Disk usage</span>
+<span class="fn">df</span> -h && <span class="fn">du</span> -sh *</pre></div>
+            <div class="callout tip"><span class="callout-icon">💡</span>Use <code>Tab</code> for auto-completion and <code>Ctrl+R</code> to search command history.</div>
+            <div class="step-check"><input type="checkbox" id="c1-1" onchange="stepChecked()"/><label for="c1-1">Practiced file system navigation</label></div>
+          </div>
+        </div>
+
+        <div class="step" id="s1-2">
+          <div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">File Permissions & Ownership</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body">
+            <p class="step-desc">Understand <code>rwx</code> permission bits, octal notation, and how chmod/chown protect your infrastructure.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">ls</span> -l /etc/passwd
+<span class="fn">chmod</span> <span class="num">755</span> script.sh      <span class="cmt"># rwxr-xr-x</span>
+<span class="fn">chmod</span> <span class="num">600</span> ~/.ssh/id_rsa   <span class="cmt"># rw------- (private key!)</span>
+<span class="fn">chown</span> ubuntu:ubuntu /var/www/html
+<span class="fn">chmod</span> +x deploy.sh && ./deploy.sh</pre></div>
+            <div class="callout warn"><span class="callout-icon">⚠️</span>Never use <code>chmod 777</code> in production — it grants full access to every user.</div>
+            <div class="step-check"><input type="checkbox" id="c1-2" onchange="stepChecked()"/><label for="c1-2">Understand Linux file permissions</label></div>
+          </div>
+        </div>
+
+        <div class="step" id="s1-3">
+          <div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">Process Management</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body">
+            <p class="step-desc">Monitor and control running processes. Know how to identify resource hogs and terminate them gracefully.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">ps</span> aux | <span class="fn">grep</span> nginx
+<span class="fn">htop</span>                  <span class="cmt"># interactive process viewer</span>
+<span class="fn">kill</span> -9 <span class="num">1234</span>          <span class="cmt"># kill by PID</span>
+<span class="fn">pkill</span> nginx           <span class="cmt"># kill by name</span>
+<span class="fn">sleep</span> 60 &amp;            <span class="cmt"># run in background</span>
+<span class="fn">jobs</span> && <span class="fn">fg</span> %1         <span class="cmt"># list jobs, bring to foreground</span></pre></div>
+            <div class="step-check"><input type="checkbox" id="c1-3" onchange="stepChecked()"/><label for="c1-3">Can manage Linux processes</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes + Quiz injected by JS -->
+      <div class="notes-section">
+        <div class="notes-label">📝 My Notes — Day 1</div>
+        <textarea class="notes-area" id="notes-1" placeholder="Write your own notes, gotchas, or commands to remember…" oninput="saveNotes(1)"></textarea>
+        <div class="notes-saved" id="notes-saved-1">✓ Saved</div>
+      </div>
+      <div class="quiz-section" id="quiz-1"></div>
+    </div>
+
+    <!-- ════ DAY 2 ════ -->
+    <div class="day-section" id="day2">
+      <div class="day-header"><span class="day-num">Day 02</span><h2 class="day-title">Shell Scripting</h2><button class="day-complete-btn" data-day="2">Mark Complete</button></div>
+      <p class="day-intro">Stop running commands manually. Write scripts that automate repetitive tasks, handle errors gracefully, and run on a schedule.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">Variables, Conditionals & Loops</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">The building blocks of every shell script. Master these and you can automate almost anything on a Linux system.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="cmt">#!/bin/bash</span>
+<span class="var">NAME</span>=<span class="str">"DevOps"</span>
+<span class="var">COUNT</span>=<span class="num">5</span>
+
+<span class="kw">if</span> [ -f /etc/nginx/nginx.conf ]; <span class="kw">then</span>
+  <span class="fn">echo</span> <span class="str">"Nginx is installed"</span>
+<span class="kw">else</span>
+  <span class="fn">echo</span> <span class="str">"Nginx not found"</span>
+<span class="kw">fi</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> $(seq 1 $COUNT); <span class="kw">do</span>
+  <span class="fn">echo</span> <span class="str">"Iteration $i of $COUNT"</span>
+<span class="kw">done</span></pre></div>
+            <div class="step-check"><input type="checkbox" id="c2-1" onchange="stepChecked()"/><label for="c2-1">Written a script with variables and loops</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Functions & Error Handling</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Production scripts must handle failures gracefully. Use <code>set -e</code>, exit codes, and trap signals for robust automation.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="cmt">#!/bin/bash</span>
+<span class="kw">set</span> -euo pipefail
+
+<span class="fn">log</span>() { <span class="fn">echo</span> <span class="str">"[$(date +%T)] $*"</span>; }
+
+<span class="fn">deploy</span>() {
+  <span class="fn">log</span> <span class="str">"Starting deploy…"</span>
+  <span class="fn">docker</span> pull myapp:latest || { <span class="fn">log</span> <span class="str">"Pull failed"</span>; <span class="kw">exit</span> <span class="num">1</span>; }
+  <span class="fn">docker</span> compose up -d
+  <span class="fn">log</span> <span class="str">"Deploy complete ✓"</span>
+}
+
+<span class="fn">trap</span> <span class="str">'log "Script interrupted"'</span> INT TERM
+<span class="fn">deploy</span></pre></div>
+            <div class="step-check"><input type="checkbox" id="c2-2" onchange="stepChecked()"/><label for="c2-2">Script handles errors with set -euo pipefail</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">Cron Jobs & Scheduling</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Schedule scripts to run automatically using cron. Every DevOps engineer needs to read and write crontab expressions.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">crontab</span> -e
+<span class="cmt"># min hour day month weekday command</span>
+<span class="num">30 2</span> * * * /opt/scripts/backup.sh >> /var/log/backup.log <span class="num">2</span>&amp;<span class="num">1</span>
+<span class="str">*/5</span> * * * * /opt/scripts/health-check.sh
+<span class="fn">crontab</span> -l</pre></div>
+            <div class="callout info"><span class="callout-icon">ℹ️</span>Use crontab.guru to visually build and test cron expressions.</div>
+            <div class="step-check"><input type="checkbox" id="c2-3" onchange="stepChecked()"/><label for="c2-3">Scheduled a script with cron</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 2</div><textarea class="notes-area" id="notes-2" placeholder="Write your own notes…" oninput="saveNotes(2)"></textarea><div class="notes-saved" id="notes-saved-2">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-2"></div>
+    </div>
+
+    <!-- ════ DAY 3 ════ -->
+    <div class="day-section" id="day3">
+      <div class="day-header"><span class="day-num">Day 03</span><h2 class="day-title">Git & Version Control</h2><button class="day-complete-btn" data-day="3">Mark Complete</button></div>
+      <p class="day-intro">Git is the foundation of all modern software delivery. Every config file, script, and IaC template you write should live in Git.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">Core Git Workflow</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">The daily loop: stage, commit, push. Understanding the working tree, staging area, and history is essential.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">git</span> init && <span class="fn">git</span> remote add origin https://github.com/user/repo.git
+<span class="fn">git</span> status
+<span class="fn">git</span> add -A
+<span class="fn">git</span> commit -m <span class="str">"feat: add nginx config"</span>
+<span class="fn">git</span> push origin main
+<span class="fn">git</span> log --oneline --graph</pre></div>
+            <div class="step-check"><input type="checkbox" id="c3-1" onchange="stepChecked()"/><label for="c3-1">Made commits using the core workflow</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Branching & Merging</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Feature branches isolate work. Merge or rebase to integrate. Resolve conflicts without fear.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">git</span> checkout -b feature/add-monitoring
+<span class="fn">git</span> add -A && <span class="fn">git</span> commit -m <span class="str">"add prometheus config"</span>
+<span class="fn">git</span> checkout main
+<span class="fn">git</span> merge --no-ff feature/add-monitoring
+<span class="fn">git</span> branch -d feature/add-monitoring</pre></div>
+            <div class="step-check"><input type="checkbox" id="c3-2" onchange="stepChecked()"/><label for="c3-2">Created and merged a feature branch</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">.gitignore & Secrets</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Never commit secrets to Git. Use .gitignore and environment variables. If a secret is committed, rotate it immediately.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">text</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="cmt"># .gitignore</span>
+.env
+*.pem
+*.key
+node_modules/
+.terraform/
+__pycache__/</pre></div>
+            <div class="callout warn"><span class="callout-icon">⚠️</span>GitHub scans all public commits for secrets. Treat a committed secret as compromised — rotate it immediately.</div>
+            <div class="step-check"><input type="checkbox" id="c3-3" onchange="stepChecked()"/><label for="c3-3">Set up .gitignore and kept secrets safe</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 3</div><textarea class="notes-area" id="notes-3" placeholder="Write your own notes…" oninput="saveNotes(3)"></textarea><div class="notes-saved" id="notes-saved-3">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-3"></div>
+    </div>
+
+    <!-- ════ DAY 4 ════ -->
+    <div class="day-section" id="day4">
+      <div class="day-header"><span class="day-num">Day 04</span><h2 class="day-title">Docker Fundamentals</h2><button class="day-complete-btn" data-day="4">Mark Complete</button></div>
+      <p class="day-intro">Containers are the lingua franca of modern infrastructure. By end of day, you'll be building, running, and publishing your own images.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">Install Docker & Core Commands</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Install Docker Engine and learn the commands you'll run dozens of times a day: pull, run, exec, logs, ps, rm.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">curl</span> -fsSL https://get.docker.com | sh
+<span class="fn">sudo</span> usermod -aG docker $USER && <span class="fn">newgrp</span> docker
+<span class="fn">docker</span> run -d -p 80:80 --name web nginx
+<span class="fn">docker</span> logs -f web
+<span class="fn">docker</span> exec -it web sh
+<span class="fn">docker</span> stop web && <span class="fn">docker</span> rm web</pre></div>
+            <div class="step-check"><input type="checkbox" id="c4-1" onchange="stepChecked()"/><label for="c4-1">Docker is installed and running</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Write a Production Dockerfile</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Use multi-stage builds to create small, secure images. Always run as a non-root user in production.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">dockerfile</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">FROM</span> node:<span class="num">20</span>-alpine <span class="kw">AS</span> builder
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm ci --only=production
+
+<span class="kw">FROM</span> node:<span class="num">20</span>-alpine
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> --from=builder /app/node_modules ./node_modules
+<span class="kw">COPY</span> . .
+<span class="kw">RUN</span> addgroup -S app && adduser -S app -G app
+<span class="kw">USER</span> app
+<span class="kw">EXPOSE</span> <span class="num">3000</span>
+<span class="kw">CMD</span> [<span class="str">"node"</span>, <span class="str">"server.js"</span>]</pre></div>
+            <div class="step-check"><input type="checkbox" id="c4-2" onchange="stepChecked()"/><label for="c4-2">Built a multi-stage Dockerfile</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">Push to Docker Hub</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Tag images with semantic versions and push to a registry so your CI/CD pipeline can pull them anywhere.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">docker</span> login
+<span class="fn">docker</span> build -t yourusername/myapp:<span class="num">1.0</span>.0 .
+<span class="fn">docker</span> tag yourusername/myapp:<span class="num">1.0</span>.0 yourusername/myapp:latest
+<span class="fn">docker</span> push yourusername/myapp --all-tags</pre></div>
+            <div class="step-check"><input type="checkbox" id="c4-3" onchange="stepChecked()"/><label for="c4-3">Pushed an image to Docker Hub</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 4</div><textarea class="notes-area" id="notes-4" placeholder="Write your own notes…" oninput="saveNotes(4)"></textarea><div class="notes-saved" id="notes-saved-4">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-4"></div>
+    </div>
+
+    <!-- ════ DAY 5 ════ -->
+    <div class="day-section" id="day5">
+      <div class="day-header"><span class="day-num">Day 05</span><h2 class="day-title">Docker Compose</h2><button class="day-complete-btn" data-day="5">Mark Complete</button></div>
+      <p class="day-intro">Real applications have multiple services. Docker Compose lets you define, run, and connect them all with one file.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">Write a docker-compose.yml</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Define a full stack: Node.js + PostgreSQL + Redis. Compose handles networking between services automatically.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">version</span>: <span class="str">'3.9'</span>
+<span class="kw">services</span>:
+  <span class="var">app</span>:
+    <span class="kw">build</span>: .
+    <span class="kw">ports</span>: [<span class="str">"3000:3000"</span>]
+    <span class="kw">environment</span>:
+      <span class="var">DATABASE_URL</span>: postgres://user:pass@db:5432/mydb
+    <span class="kw">depends_on</span>: [db, cache]
+  <span class="var">db</span>:
+    <span class="kw">image</span>: postgres:<span class="num">16</span>-alpine
+    <span class="kw">volumes</span>: [pgdata:/var/lib/postgresql/data]
+  <span class="var">cache</span>:
+    <span class="kw">image</span>: redis:<span class="num">7</span>-alpine
+<span class="kw">volumes</span>:
+  <span class="var">pgdata</span>:</pre></div>
+            <div class="step-check"><input type="checkbox" id="c5-1" onchange="stepChecked()"/><label for="c5-1">Written a multi-service compose file</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Compose Commands</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">The complete Compose CLI you'll use daily — start, stop, rebuild, scale, and debug your stack.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">docker</span> compose up -d
+<span class="fn">docker</span> compose logs -f app
+<span class="fn">docker</span> compose ps
+<span class="fn">docker</span> compose exec app sh
+<span class="fn">docker</span> compose down -v
+<span class="fn">docker</span> compose build --no-cache</pre></div>
+            <div class="step-check"><input type="checkbox" id="c5-2" onchange="stepChecked()"/><label for="c5-2">Stack is running with docker compose up -d</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">Environment Files & Overrides</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Use <code>.env</code> files for secrets and compose overrides to maintain separate dev vs production configs.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="cmt"># .env (never commit!)</span>
+<span class="var">POSTGRES_PASSWORD</span>=supersecret
+
+<span class="cmt"># docker-compose.override.yml</span>
+<span class="kw">services</span>:
+  <span class="var">app</span>:
+    <span class="kw">volumes</span>: [./src:/app/src]
+    <span class="kw">command</span>: npm run dev</pre></div>
+            <div class="step-check"><input type="checkbox" id="c5-3" onchange="stepChecked()"/><label for="c5-3">Using .env and compose overrides</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 5</div><textarea class="notes-area" id="notes-5" placeholder="Write your own notes…" oninput="saveNotes(5)"></textarea><div class="notes-saved" id="notes-saved-5">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-5"></div>
+    </div>
+
+    <!-- ════ DAY 6 ════ -->
+    <div class="day-section" id="day6">
+      <div class="day-header"><span class="day-num">Day 06</span><h2 class="day-title">GitHub Actions — CI/CD</h2><button class="day-complete-btn" data-day="6">Mark Complete</button></div>
+      <p class="day-intro">Automate your entire build-test-deploy cycle. By end of day you'll have a working pipeline that fires on every git push.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">Your First Workflow</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Workflows live in <code>.github/workflows/</code>. Create a YAML file that installs, tests, and builds your project on every push.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">name</span>: CI Pipeline
+<span class="kw">on</span>:
+  <span class="kw">push</span>: { branches: [main] }
+<span class="kw">jobs</span>:
+  <span class="var">test</span>:
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v4
+      - <span class="kw">uses</span>: actions/setup-node@v4
+        <span class="kw">with</span>: { node-version: <span class="str">'20'</span>, cache: <span class="str">'npm'</span> }
+      - <span class="kw">run</span>: npm ci && npm test && npm run build</pre></div>
+            <div class="step-check"><input type="checkbox" id="c6-1" onchange="stepChecked()"/><label for="c6-1">First workflow runs on push</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Build & Push Docker Image</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Extend the pipeline to build a Docker image and push it to Docker Hub, tagged with the git commit SHA.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre>  <span class="var">docker</span>:
+    <span class="kw">needs</span>: test
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v4
+      - <span class="kw">uses</span>: docker/login-action@v3
+        <span class="kw">with</span>:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - <span class="kw">uses</span>: docker/build-push-action@v5
+        <span class="kw">with</span>:
+          push: <span class="kw">true</span>
+          tags: myuser/myapp:${{ github.sha }}</pre></div>
+            <div class="step-check"><input type="checkbox" id="c6-2" onchange="stepChecked()"/><label for="c6-2">Pipeline builds and pushes Docker image</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">Secrets & Environment Variables</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Store credentials safely in GitHub Secrets. Use environment-scoped secrets for staging vs production.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">env</span>:
+  <span class="var">API_URL</span>: ${{ vars.API_URL }}
+  <span class="var">DB_PASSWORD</span>: ${{ secrets.DB_PASS }}</pre></div>
+            <div class="callout tip"><span class="callout-icon">💡</span>Use <code>vars.*</code> for non-secret config and <code>secrets.*</code> for credentials. Both are masked in logs.</div>
+            <div class="step-check"><input type="checkbox" id="c6-3" onchange="stepChecked()"/><label for="c6-3">Secrets stored in GitHub, not in YAML</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 6</div><textarea class="notes-area" id="notes-6" placeholder="Write your own notes…" oninput="saveNotes(6)"></textarea><div class="notes-saved" id="notes-saved-6">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-6"></div>
+    </div>
+
+    <!-- ════ DAY 7 ════ -->
+    <div class="day-section" id="day7">
+      <div class="day-header"><span class="day-num">Day 07</span><h2 class="day-title">Deployment Strategies</h2><button class="day-complete-btn" data-day="7">Mark Complete</button></div>
+      <p class="day-intro">How you deploy matters as much as what you deploy. Learn rolling updates, blue-green, and rollbacks to ship with zero downtime.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">SSH Deploy via GitHub Actions</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Deploy to a remote server over SSH directly from your CI pipeline. Store the private key as a GitHub Secret.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre>      - <span class="kw">uses</span>: appleboy/ssh-action@v1.0.3
+        <span class="kw">with</span>:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          <span class="kw">script</span>: |
+            cd /opt/myapp
+            docker pull myuser/myapp:latest
+            docker compose up -d --no-deps app
+            docker image prune -f</pre></div>
+            <div class="step-check"><input type="checkbox" id="c7-1" onchange="stepChecked()"/><label for="c7-1">Deployment works via SSH action</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Blue-Green Deployments</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Run two identical environments. Deploy to the idle one, test it, then switch traffic. Zero downtime guaranteed.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="var">ACTIVE</span>=$(<span class="fn">docker</span> inspect --format '{{.Name}}' live | <span class="fn">grep</span> -o 'blue\|green')
+<span class="var">NEXT</span>=$([[ $ACTIVE == <span class="str">"blue"</span> ]] && <span class="fn">echo</span> <span class="str">"green"</span> || <span class="fn">echo</span> <span class="str">"blue"</span>)
+<span class="fn">docker</span> run -d --name app-$NEXT myapp:latest
+<span class="fn">sed</span> -i "s/$ACTIVE/$NEXT/" /etc/nginx/conf.d/upstream.conf
+<span class="fn">nginx</span> -s reload
+<span class="fn">docker</span> stop app-$ACTIVE && <span class="fn">docker</span> rm app-$ACTIVE</pre></div>
+            <div class="step-check"><input type="checkbox" id="c7-2" onchange="stepChecked()"/><label for="c7-2">Understand blue-green deployment pattern</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">Rollbacks</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Always have a rollback plan. Pin image tags in production and keep previous versions available to redeploy instantly.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">docker</span> pull myuser/myapp:abc1234
+<span class="fn">docker</span> compose up -d --no-deps app</pre></div>
+            <div class="callout info"><span class="callout-icon">ℹ️</span>Never use only <code>:latest</code> in production — always also tag with a version or git SHA.</div>
+            <div class="step-check"><input type="checkbox" id="c7-3" onchange="stepChecked()"/><label for="c7-3">Rollback plan is documented and tested</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 7</div><textarea class="notes-area" id="notes-7" placeholder="Write your own notes…" oninput="saveNotes(7)"></textarea><div class="notes-saved" id="notes-saved-7">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-7"></div>
+    </div>
+
+    <!-- ════ DAY 8 ════ -->
+    <div class="day-section" id="day8">
+      <div class="day-header"><span class="day-num">Day 08</span><h2 class="day-title">AWS Essentials</h2><button class="day-complete-btn" data-day="8">Mark Complete</button></div>
+      <p class="day-intro">AWS powers a third of the internet. Get hands-on with EC2, S3, IAM, and VPC — the core services every DevOps engineer must know.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">AWS CLI & IAM Setup</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Never use your root account. Create an IAM user with least-privilege permissions, configure the CLI, and use roles for services.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">curl</span> <span class="str">"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"</span> -o awscliv2.zip
+<span class="fn">unzip</span> awscliv2.zip && <span class="fn">sudo</span> ./aws/install
+<span class="fn">aws</span> configure
+<span class="fn">aws</span> sts get-caller-identity</pre></div>
+            <div class="callout warn"><span class="callout-icon">⚠️</span>Never store AWS credentials in code or Docker images. Use IAM roles for EC2/Lambda instead.</div>
+            <div class="step-check"><input type="checkbox" id="c8-1" onchange="stepChecked()"/><label for="c8-1">AWS CLI configured with IAM user</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">EC2 & S3 Essentials</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Launch a server with EC2 and store files or static assets in S3. These are the two most used AWS services in any infrastructure.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">aws</span> ec2 run-instances \
+  --image-id ami-0c55b159cbfafe1f0 \
+  --instance-type t3.micro \
+  --key-name my-key
+<span class="fn">aws</span> s3 mb s3://my-devops-bucket
+<span class="fn">aws</span> s3 sync ./dist/ s3://my-devops-bucket/ --delete</pre></div>
+            <div class="step-check"><input type="checkbox" id="c8-2" onchange="stepChecked()"/><label for="c8-2">Launched EC2, uploaded files to S3</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">VPC & Security Groups</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Never launch into the default VPC in production. Design a VPC with public and private subnets to control traffic flow.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">aws</span> ec2 create-vpc --cidr-block <span class="num">10.0</span>.0.0/16
+<span class="fn">aws</span> ec2 create-subnet \
+  --vpc-id vpc-xxx \
+  --cidr-block <span class="num">10.0</span>.1.0/24
+<span class="fn">aws</span> ec2 authorize-security-group-ingress \
+  --group-id sg-xxx --protocol tcp --port <span class="num">80</span> --cidr <span class="num">0.0</span>.0.0/0</pre></div>
+            <div class="step-check"><input type="checkbox" id="c8-3" onchange="stepChecked()"/><label for="c8-3">Understand VPC, subnets, security groups</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 8</div><textarea class="notes-area" id="notes-8" placeholder="Write your own notes…" oninput="saveNotes(8)"></textarea><div class="notes-saved" id="notes-saved-8">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-8"></div>
+    </div>
+
+    <!-- ════ DAY 9 ════ -->
+    <div class="day-section" id="day9">
+      <div class="day-header"><span class="day-num">Day 09</span><h2 class="day-title">Terraform — Infrastructure as Code</h2><button class="day-complete-btn" data-day="9">Mark Complete</button></div>
+      <p class="day-intro">Stop clicking in the AWS console. Define your entire infrastructure in code, version it in Git, and deploy reproducible environments in minutes.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">Terraform Basics</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Install Terraform, write your first HCL configuration, and deploy a real EC2 instance to AWS.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">hcl</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">terraform</span> {
+  required_providers {
+    aws = { source = <span class="str">"hashicorp/aws"</span>, version = <span class="str">"~> 5.0"</span> }
+  }
+}
+<span class="kw">provider</span> <span class="str">"aws"</span> { region = <span class="str">"us-east-1"</span> }
+<span class="kw">resource</span> <span class="str">"aws_instance"</span> <span class="str">"web"</span> {
+  ami           = <span class="str">"ami-0c55b159cbfafe1f0"</span>
+  instance_type = <span class="str">"t3.micro"</span>
+}</pre></div>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">terraform</span> init && <span class="fn">terraform</span> plan && <span class="fn">terraform</span> apply</pre></div>
+            <div class="step-check"><input type="checkbox" id="c9-1" onchange="stepChecked()"/><label for="c9-1">Applied first Terraform configuration</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Variables & Outputs</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Parameterize your infrastructure with variables. Export useful values like public IPs as outputs to share between modules.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">hcl</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">variable</span> <span class="str">"instance_type"</span> { default = <span class="str">"t3.micro"</span> }
+
+<span class="kw">output</span> <span class="str">"public_ip"</span> {
+  value = aws_instance.web.public_ip
+}
+
+<span class="cmt"># override at apply time</span>
+<span class="fn">terraform</span> apply -var=<span class="str">"instance_type=t3.small"</span></pre></div>
+            <div class="step-check"><input type="checkbox" id="c9-2" onchange="stepChecked()"/><label for="c9-2">Using variables and outputs</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">Remote State & Workspaces</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Store state in S3 with DynamoDB locking so teams can collaborate without overwriting each other's changes.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">hcl</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">terraform</span> {
+  backend <span class="str">"s3"</span> {
+    bucket         = <span class="str">"my-tf-state"</span>
+    key            = <span class="str">"prod/terraform.tfstate"</span>
+    region         = <span class="str">"us-east-1"</span>
+    dynamodb_table = <span class="str">"tf-state-lock"</span>
+    encrypt        = <span class="kw">true</span>
+  }
+}
+<span class="fn">terraform</span> workspace new staging
+<span class="fn">terraform</span> workspace select production</pre></div>
+            <div class="step-check"><input type="checkbox" id="c9-3" onchange="stepChecked()"/><label for="c9-3">Remote state stored in S3</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 9</div><textarea class="notes-area" id="notes-9" placeholder="Write your own notes…" oninput="saveNotes(9)"></textarea><div class="notes-saved" id="notes-saved-9">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-9"></div>
+    </div>
+
+    <!-- ════ DAY 10 ════ -->
+    <div class="day-section" id="day10">
+      <div class="day-header"><span class="day-num">Day 10</span><h2 class="day-title">Kubernetes Introduction</h2><button class="day-complete-btn" data-day="10">Mark Complete</button></div>
+      <p class="day-intro">Kubernetes orchestrates containers at scale. Deploy a real app to a cluster, scale it, and expose it to the internet.</p>
+      <div class="steps">
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-title">Core Concepts & kubectl</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Understand Pods, Deployments, Services, and Namespaces. Install kubectl and connect to a local cluster with minikube.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">minikube</span> start
+<span class="fn">kubectl</span> get nodes
+<span class="fn">kubectl</span> get pods -A
+<span class="fn">kubectl</span> run nginx --image=nginx --port=<span class="num">80</span>
+<span class="fn">kubectl</span> describe pod nginx
+<span class="fn">kubectl</span> logs nginx
+<span class="fn">kubectl</span> delete pod nginx</pre></div>
+            <div class="step-check"><input type="checkbox" id="c10-1" onchange="stepChecked()"/><label for="c10-1">kubectl connected to a running cluster</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-title">Deployment & Service YAML</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Deploy your Docker image with a Deployment (manages replicas) and expose it with a Service (manages networking).</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">apiVersion</span>: apps/v1
+<span class="kw">kind</span>: Deployment
+<span class="kw">metadata</span>: { name: myapp }
+<span class="kw">spec</span>:
+  <span class="kw">replicas</span>: <span class="num">3</span>
+  <span class="kw">selector</span>: { matchLabels: { app: myapp } }
+  <span class="kw">template</span>:
+    <span class="kw">metadata</span>: { labels: { app: myapp } }
+    <span class="kw">spec</span>:
+      <span class="kw">containers</span>:
+        - <span class="kw">name</span>: myapp
+          <span class="kw">image</span>: yourusername/myapp:<span class="num">1.0</span>.0
+          <span class="kw">ports</span>: [{ containerPort: <span class="num">3000</span> }]
+---
+<span class="kw">apiVersion</span>: v1
+<span class="kw">kind</span>: Service
+<span class="kw">metadata</span>: { name: myapp-svc }
+<span class="kw">spec</span>:
+  <span class="kw">selector</span>: { app: myapp }
+  <span class="kw">ports</span>: [{ port: <span class="num">80</span>, targetPort: <span class="num">3000</span> }]
+  <span class="kw">type</span>: LoadBalancer</pre></div>
+            <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="fn">kubectl</span> apply -f deployment.yaml
+<span class="fn">kubectl</span> get pods -w
+<span class="fn">kubectl</span> scale deployment myapp --replicas=5</pre></div>
+            <div class="step-check"><input type="checkbox" id="c10-2" onchange="stepChecked()"/><label for="c10-2">App deployed with 3 replicas running</label></div>
+          </div>
+        </div>
+        <div class="step"><div class="step-head" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-title">ConfigMaps, Secrets & Health Probes</div><span class="step-toggle">⌄</span></div>
+          <div class="step-body"><p class="step-desc">Inject configuration and secrets into pods. Add liveness and readiness probes so Kubernetes can self-heal your application.</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">yaml</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+<pre><span class="kw">spec</span>:
+  <span class="kw">containers</span>:
+    - <span class="kw">name</span>: myapp
+      <span class="kw">envFrom</span>:
+        - <span class="kw">configMapRef</span>: { name: app-config }
+        - <span class="kw">secretRef</span>: { name: app-secrets }
+      <span class="kw">livenessProbe</span>:
+        <span class="kw">httpGet</span>: { path: /healthz, port: <span class="num">3000</span> }
+        <span class="kw">initialDelaySeconds</span>: <span class="num">10</span>
+      <span class="kw">readinessProbe</span>:
+        <span class="kw">httpGet</span>: { path: /ready, port: <span class="num">3000</span> }
+        <span class="kw">initialDelaySeconds</span>: <span class="num">5</span></pre></div>
+            <div class="callout tip"><span class="callout-icon">💡</span>Liveness restarts a broken container. Readiness removes it from the load balancer until it's ready.</div>
+            <div class="step-check"><input type="checkbox" id="c10-3" onchange="stepChecked()"/><label for="c10-3">Health probes configured on all containers</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-section"><div class="notes-label">📝 My Notes — Day 10</div><textarea class="notes-area" id="notes-10" placeholder="Write your own notes…" oninput="saveNotes(10)"></textarea><div class="notes-saved" id="notes-saved-10">✓ Saved</div></div>
+      <div class="quiz-section" id="quiz-10"></div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <span>DevOpsGuide</span> — 10-day hands-on roadmap · Built for engineers, by engineers
+</footer>
+
+<!-- ════════════════════════════════════════
+     SCRIPTS — loaded in dependency order
+     Each file has one clear responsibility.
+════════════════════════════════════════ -->
+<script src="data.js"></script>      <!-- QUIZZES + SEARCH_INDEX constants     -->
+<script src="confetti.js"></script>  <!-- launchConfetti() + showToast()        -->
+<script src="timer.js"></script>     <!-- toggleTimer(), resetTimer()           -->
+<script src="progress.js"></script>  <!-- stepChecked(), initProgress()         -->
+<script src="notes.js"></script>     <!-- saveNotes(), initNotes()              -->
+<script src="quiz.js"></script>      <!-- renderQuizzes(), submitQuiz()         -->
+<script src="search.js"></script>    <!-- initSearch(), goTo()                  -->
+<script src="app.js"></script>       <!-- entry point — calls all init()s       -->
+
+</body>
+</html>
